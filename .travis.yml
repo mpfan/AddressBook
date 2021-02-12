@@ -8,3 +8,5 @@ deploy:
   api-key:
     secure: $HEROKU_API_KEY
   app: lippep-spring-boot-test
+  on:
+    branch: main
