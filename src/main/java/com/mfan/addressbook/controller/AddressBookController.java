@@ -26,7 +26,7 @@ public class AddressBookController {
     /**
      * Displays all buddyInfoes for an addressbook
      */
-    @GetMapping("/addressbook/{id}")
+    @GetMapping("/addressbook/list/{id}")
     public String addressBookDetail(@PathVariable long id, Model model) {
         AddressBook addressBook = addressBookRepository.findById(id);
 

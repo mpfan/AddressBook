@@ -30,6 +30,11 @@ public class AddressBookRestController {
         return addressBookRepository.findAll();
     }
 
+    @GetMapping("/addressbook/{id}")
+    public AddressBook getAddressBook(@PathVariable long id) {
+        return addressBookRepository.findById(id);
+    }
+
     @PostMapping("/addressbook/new")
     public AddressBook createAddressBook() {
         AddressBook addressBook = new AddressBook();

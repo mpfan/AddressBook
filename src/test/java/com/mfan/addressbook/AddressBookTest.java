@@ -13,6 +13,12 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+/**
+ * Tests AddressBookRestController.
+ *
+ * @author Michael Fan 101029934
+ */
+
 @SpringBootTest
 @AutoConfigureMockMvc
 public class AddressBookTest {
@@ -25,6 +31,17 @@ public class AddressBookTest {
     public void testAddAddressBook() throws Exception {
         this.mockMvc.perform( MockMvcRequestBuilders
                 .post("/addressbook/new")
+                .content(asJsonString(addressBook))
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.id").exists());
+    }
+
+    @Test
+    public void testGetAddressBook() throws Exception {
+        this.mockMvc.perform( MockMvcRequestBuilders
+                .get("/addressbook/1")
                 .content(asJsonString(addressBook))
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
