@@ -2,6 +2,8 @@ package com.mfan.addressbook;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mfan.addressbook.model.AddressBook;
+import com.mfan.addressbook.model.BuddyInfo;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -25,13 +27,34 @@ public class AddressBookTest {
     @Autowired
     private MockMvc mockMvc;
 
-    private AddressBook addressBook;
-
     @Test
+    @Order(1)
     public void testAddAddressBook() throws Exception {
         this.mockMvc.perform( MockMvcRequestBuilders
                 .post("/addressbook/new")
-                .content(asJsonString(addressBook))
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.id").exists());
+    }
+
+    @Test
+    @Order(2)
+    public void testGetAddressBook() throws Exception {
+        this.mockMvc.perform( MockMvcRequestBuilders
+                .get("/addressbook/1")
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.id").exists());
+    }
+
+    @Test
+    @Order(3)
+    public void addBuddyInfo() throws Exception {
+        BuddyInfo buddyInfo = new BuddyInfo("buddy", "phoneNumber", "address");
+
+        this.mockMvc.perform( MockMvcRequestBuilders
+                .post("/addressbook/1/addBuddy")
+                .content(asJsonString(buddyInfo))
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -39,11 +62,10 @@ public class AddressBookTest {
     }
 
     @Test
-    public void testGetAddressBook() throws Exception {
+    @Order(4)
+    public void removeBuddyInfo() throws Exception {
         this.mockMvc.perform( MockMvcRequestBuilders
-                .get("/addressbook/1")
-                .content(asJsonString(addressBook))
-                .contentType(MediaType.APPLICATION_JSON)
+                .delete("/addressbook/1/removeBuddy/2")
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.id").exists());

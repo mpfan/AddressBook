@@ -1,5 +1,6 @@
 package com.mfan.addressbook.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import javax.persistence.*;
@@ -21,6 +22,7 @@ public class BuddyInfo {
 
     @ManyToOne
     @JoinColumn(name = "addressBook_id")
+    @JsonBackReference
     private AddressBook addressBook;
 
     /**

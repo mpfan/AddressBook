@@ -1,6 +1,7 @@
 package com.mfan.addressbook.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -19,6 +20,7 @@ public class AddressBook {
     private long id; // primary key
 
     @OneToMany(mappedBy = "addressBook", cascade = CascadeType.PERSIST)
+    @JsonManagedReference
     private List<BuddyInfo> list;
 
     /**
