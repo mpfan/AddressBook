@@ -38,7 +38,7 @@ public class AddressBookController {
     /**
      * Lists all addressbooks
      */
-    @GetMapping("/addressbook/list")
+    @GetMapping("/")
     public String addressBookList(Model model) {
         model.addAttribute("addressBooks", addressBookRepository.findAll());
 

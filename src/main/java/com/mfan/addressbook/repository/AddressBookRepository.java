@@ -2,6 +2,7 @@ package com.mfan.addressbook.repository;
 
 import com.mfan.addressbook.model.AddressBook;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.stereotype.Repository;
 
 /**
  * Repository for AddressBook
