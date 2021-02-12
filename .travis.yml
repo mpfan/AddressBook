@@ -3,3 +3,8 @@ jdk:
   - oraclejdk13
 before_install:
   - chmod +x mvnw
+deploy:
+  provider: heroku
+  api-key:
+    secure: $HEROKU_API_KEY
+  app: lippep-spring-boot-test
