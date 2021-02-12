@@ -1,0 +1,17 @@
+<h1>AddressBook <span th:text="${addressBook.id}" /></h1>
+<table>
+    <thead>
+    <tr>
+        <th> Name </th>
+        <th> Phone Number </th>
+        <th> Address </th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="buddyInfo : ${addressBook.list}">
+        <td><span th:text="${buddyInfo.name}"> Name </span></td>
+        <td><span th:text="${buddyInfo.phoneNumber}"> Phone Number </span></td>
+        <td><span th:text="${buddyInfo.address}"> Address </span></td>
+    </tr>
+    </tbody>
+</table>

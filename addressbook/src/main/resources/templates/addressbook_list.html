@@ -1,0 +1,4 @@
+<h1>AddressBooks:</h1>
+<div th:each="addressBook : ${addressBooks}">
+    <a th:href="@{'/addressbook/' + ${addressBook.id}}">AddressBook <span th:text="${addressBook.id}" /></a>
+</div>
