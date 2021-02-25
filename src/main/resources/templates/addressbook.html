@@ -1,4 +1,5 @@
-<h1>AddressBook <span th:text="${addressBook.id}" /></h1>
+<a href="/">Return to home</a>
+<h1 xmlns="http://www.w3.org/1999/html">AddressBook <span th:text="${addressBook.id}" /></h1>
 <table>
     <thead>
     <tr>
@@ -12,6 +13,26 @@
         <td><span th:text="${buddyInfo.name}"> Name </span></td>
         <td><span th:text="${buddyInfo.phoneNumber}"> Phone Number </span></td>
         <td><span th:text="${buddyInfo.address}"> Address </span></td>
+        <td>
+            <form th:action="@{/addressbook/{addressBookId}/delete/{buddyId}(addressBookId=${addressBook.id},buddyId=${buddyInfo.id})}" method="post">
+                <button type="submit">Delete</button>
+            </form>
+        </td>
     </tr>
     </tbody>
 </table>
+</br>
+</br>
+<form th:object="${buddyInfo}" th:action="@{/addressbook/{id}/create/addBuddy(id=${addressBook.id})}" method="post">
+    <label for="name">Name:</label></br>
+    <input type="text" id="name" name="name" th:field="*{name}"></br>
+
+    <label for="phoneNumber">Phone Number:</label></br>
+    <input type="text" id="phoneNumber" name="phoneNumber" th:field="*{phoneNumber}"></br>
+
+    <label for="address">Address:</label></br>
+    <input type="text" id="address" name="address" th:field="*{address}"></br>
+
+    </br>
+    <button type="submit">Add new BuddyInfo</button>
+</form>

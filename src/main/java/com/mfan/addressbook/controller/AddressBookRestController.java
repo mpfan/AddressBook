@@ -4,7 +4,6 @@ import com.mfan.addressbook.model.AddressBook;
 import com.mfan.addressbook.model.BuddyInfo;
 import com.mfan.addressbook.repository.AddressBookRepository;
 import com.mfan.addressbook.repository.BuddyInfoRepository;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 /**
