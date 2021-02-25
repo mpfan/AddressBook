@@ -94,4 +94,12 @@ public class AddressBookController {
 
         return new RedirectView("/addressbook/list/" + addressBook.getId());
     }
+
+    /**
+     * Returns the SPA version of AddressBook
+     */
+    @GetMapping("/spa")
+    public String spa() {
+        return "spa";
+    }
 }
