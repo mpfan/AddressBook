@@ -1,9 +1,24 @@
+<html>
+<head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script type="text/javascript" src="/assets/spa.js"></script>
+</head>
+<body>
 <h1>AddressBooks:</h1>
-<div th:each="addressBook : ${addressBooks}">
-    <a th:href="@{'/addressbook/list/' + ${addressBook.id}}">AddressBook <span th:text="${addressBook.id}" /></a>
+<div id="addressBookList">
+    <p th:each="addressBook : ${addressBooks}" >
+        <a th:href="@{'/addressbook/list/' + ${addressBook.id}}">
+            AddressBook <span th:text="${addressBook.id}" />
+        </a>
+    </p>
 </div>
+
 </br>
 </br>
-<form action="/addressbook/create/addressbook" method="post">
+
+<form id="addAddressBook" action="/addressbook/create/addressbook" method="post">
     <button type="submit">Create a new AddressBook</button>
 </form>
+
+</body>
+</html>

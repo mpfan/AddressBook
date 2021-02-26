@@ -1,5 +1,11 @@
+<html>
+<head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script type="text/javascript" src="/assets/spa.js"></script>
+</head>
+<body>
 <a href="/">Return to home</a>
-<h1 xmlns="http://www.w3.org/1999/html">AddressBook <span th:text="${addressBook.id}" /></h1>
+<h1 th:id="${addressBook.id}">AddressBook <span th:text="${addressBook.id}" /></h1>
 <table>
     <thead>
     <tr>
@@ -8,7 +14,7 @@
         <th> Address </th>
     </tr>
     </thead>
-    <tbody>
+    <tbody id="buddyInfoList">
     <tr th:each="buddyInfo : ${addressBook.list}">
         <td><span th:text="${buddyInfo.name}"> Name </span></td>
         <td><span th:text="${buddyInfo.phoneNumber}"> Phone Number </span></td>
@@ -21,9 +27,11 @@
     </tr>
     </tbody>
 </table>
+
 </br>
 </br>
-<form th:object="${buddyInfo}" th:action="@{/addressbook/{id}/create/addBuddy(id=${addressBook.id})}" method="post">
+
+<form id="addBuddyInfo" th:object="${buddyInfo}" th:action="@{/addressbook/{id}/create/addBuddy(id=${addressBook.id})}" method="post">
     <label for="name">Name:</label></br>
     <input type="text" id="name" name="name" th:field="*{name}"></br>
 
@@ -36,3 +44,6 @@
     </br>
     <button type="submit">Add new BuddyInfo</button>
 </form>
+
+</body>
+</html>

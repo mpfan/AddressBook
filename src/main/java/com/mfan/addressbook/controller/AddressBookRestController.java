@@ -41,20 +41,20 @@ public class AddressBookRestController {
     }
 
     @PostMapping("/addressbook/{id}/addBuddy")
-    public AddressBook addBuddy(@PathVariable long id, @RequestBody BuddyInfo buddyInfo) {
+    public BuddyInfo addBuddy(@PathVariable long id, @RequestBody BuddyInfo buddyInfo) {
         AddressBook addressBook = addressBookRepository.findById(id);
 
         if(addressBook == null) return null;
 
         buddyInfo.setAddressBook(addressBook);
-        buddyInfoRepository.save(buddyInfo);
+        BuddyInfo newBuddyInfo = buddyInfoRepository.save(buddyInfo);
         addressBook.add(buddyInfo);
 
-        return addressBookRepository.save(addressBook);
+        return newBuddyInfo;
     }
 
     @DeleteMapping("/addressbook/{addressBookId}/removeBuddy/{buddyId}")
-    public AddressBook removeBuddy(@PathVariable long addressBookId, @PathVariable long buddyId) {
+    public BuddyInfo removeBuddy(@PathVariable long addressBookId, @PathVariable long buddyId) {
         AddressBook addressBook = addressBookRepository.findById(addressBookId);
         BuddyInfo buddyInfo = buddyInfoRepository.findById(buddyId);
 
@@ -63,6 +63,6 @@ public class AddressBookRestController {
         addressBook.remove(buddyInfo.getId());
         buddyInfoRepository.delete(buddyInfo);
 
-        return addressBookRepository.save(addressBook);
+        return buddyInfo;
     }
 }

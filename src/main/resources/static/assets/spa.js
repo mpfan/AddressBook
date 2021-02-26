@@ -1,203 +1,151 @@
 const TIMEOUT = 5000;
 
-const VIEWS = {
-  home: "home",
-  addressBook: "addresBook",
-  error: "error",
-};
-
-const RENDERER = {
-  home: renderHome,
-  addresBook: renderAddressBook,
-  error: renderError,
-};
-
-$(document).ready(function () {
-  // Default page is home
-  fetchHome();
-});
-
-function renderView(view, options) {
-  // Delete the current view before switching
-  getApp().empty();
-
-  if (view === VIEWS.home) {
-    RENDERER.home(options);
-  } else if (view === VIEWS.addressBook) {
-    RENDERER.addresBook(options);
-  } else if (view === VIEWS.error) {
-    RENDERER.error(options);
-  }
-}
-
-function renderHome({ data }) {
-  const home = `
-        <h1>AddressBooks:</h1>
-        <div id="addressBookList">
-        </div>
-        </br>
-        </br>
-        <button id="createAddressBook">Create a new AddressBook</button>
-    `;
-
-  getApp().append(home);
-
-  $("#createAddressBook").on("click", function () {
-    $.ajax({
-      type: "POST",
-      url: "/addressbook/new",
-      timeout: TIMEOUT,
-      success: function (data, requestStatus, xhrObject) {
-        renderView(VIEWS.addressBook, {
-          addressBook: data,
-          requestStatus,
-          xhrObject,
-        });
-      },
-      error: function (xhrObj, textStatus, exception) {
-        renderView(VIEWS.error, { xhrObj, textStatus, exception });
-      },
-    });
-
-    return false;
-  });
-
-  for (let addressBook of data) {
-    $("#addressBookList").append(
-      `<a id="addressBook${addressBook.id}" href="#">AddressBook ${addressBook.id}</a></br>`
-    );
-    $(`#addressBook${addressBook.id}`).on("click", function () {
-      renderView(VIEWS.addressBook, { addressBook });
-      return false;
-    });
-  }
-}
-
-function renderAddressBook({ addressBook }) {
-  const addresBookView = `
-        <a id="returnLink" href="#">Return to home</a>
-        <h1>AddressBook ${addressBook.id}</h1>
-        <table>
-            <thead>
+const SPA_SETUP = {
+  init: function () {
+    // Render buddyinfoes in place
+    $("body").append('<div id="spa"></div>');
+    $(document).on("click", "#addressBookList a", function () {
+      $("#spa").empty();
+      $.ajax({
+        type: "GET",
+        url: `/addressbook/${$(this).attr("href").split("/").pop()}`,
+        timeout: TIMEOUT,
+        success: function (data, requestStatus, xhrObject) {
+          $("#spa").append(
+            `<hr/>
+            <h1 th:id="${data.id}">AddressBook ${data.id}</h1>
+            <table>
+                <thead>
                 <tr>
                     <th> Name </th>
                     <th> Phone Number </th>
                     <th> Address </th>
                 </tr>
-            </thead>
-            <tbody id="list">
-                
-            </tbody>
-        </table>
-        </br>
-        </br>
-        <p>Name</p>
-        <input id="name" type="text" />
-        <p>Phone Number</p>
-        <input id="phoneNumber" type="text" />
-        <p>Address</p>
-        <input id="address" type="text" />
-        </br>
-        </br>
-        <button id="addBuddyInfo" type="button">Add a new BuddyInfo</button>
-    `;
+                </thead>
+                <tbody id="buddyInfoList">
+                </tbody>
+            </table>
 
-  getApp().append(addresBookView);
+            <br/>
+            <br/>
 
-  for (let buddyInfo of addressBook.list) {
-    $("#list").append(`
-            <tr>
+            <form id="${data.id}">
+                <label for="name">Name:</label><br/>
+                <input type="text" id="name" name="name" th:field="*{name}"><br/>
+
+                <label for="phoneNumber">Phone Number:</label><br/>
+                <input type="text" id="phoneNumber" name="phoneNumber" th:field="*{phoneNumber}"><br/>
+
+                <label for="address">Address:</label><br/>
+                <input type="text" id="address" name="address" th:field="*{address}"><br/>
+
+                <br/>
+                <button type="submit">Add new BuddyInfo</button>
+            </form>
+            `
+          );
+
+          for (let buddyInfo of data.list) {
+            $("#buddyInfoList").append(`
+            <tr id=${buddyInfo.id}>
                 <td>${buddyInfo.name}</td>
                 <td>${buddyInfo.phoneNumber}</td>
                 <td>${buddyInfo.address}</td>
                 <td>
-                    <button id="deleteBuddyInfo${buddyInfo.id}" type="button">Delete</button>
+                  <button id="${data.id}:${buddyInfo.id}" type="submit">Delete</button>
                 </td>
             </tr>
-        `);
-
-    $(`#deleteBuddyInfo${buddyInfo.id}`).on("click", function () {
-      $.ajax({
-        type: "DELETE",
-        url: `/addressbook/${addressBook.id}/removeBuddy/${buddyInfo.id}`,
-        timeout: TIMEOUT,
-        success: function (data, requestStatus, xhrObject) {
-          renderView(VIEWS.addressBook, {
-            addressBook: data,
-            requestStatus,
-            xhrObject,
-          });
+            `);
+          }
         },
         error: function (xhrObj, textStatus, exception) {
-          renderView(VIEWS.error, { xhrObj, textStatus, exception });
+          alert("An error has occured");
         },
       });
 
       return false;
     });
-  }
 
-  $("#returnLink").on("click", function () {
-    fetchHome();
-    return false;
-  });
-
-  $("#addBuddyInfo").on("click", function () {
-    let buddyInfo = {
-      name: $("#name").val(),
-      phoneNumber: $("#phoneNumber").val(),
-      address: $("#address").val(),
-    };
-
-    $.ajax({
-      type: "POST",
-      contentType: "application/json",
-      url: `/addressbook/${addressBook.id}/addBuddy`,
-      timeout: TIMEOUT,
-      success: function (data, requestStatus, xhrObject) {
-        renderView(VIEWS.addressBook, {
-          addressBook: data,
-          requestStatus,
-          xhrObject,
-        });
-      },
-      error: function (xhrObj, textStatus, exception) {
-        renderView(VIEWS.error, { xhrObj, textStatus, exception });
-      },
-      dataType: "json",
-      data: JSON.stringify(buddyInfo),
+    // Adding addressbook
+    $("#addAddressBook").submit(function () {
+      $("#spa").empty();
+      $.ajax({
+        type: "POST",
+        url: "/addressbook/new",
+        timeout: TIMEOUT,
+        success: function (data, requestStatus, xhrObject) {
+          $("#addressBookList").append(
+            `<p><a href="/addressbook/list/${data.id}">AddressBook ${data.id}</a></p>`
+          );
+        },
+        error: function (xhrObj, textStatus, exception) {
+          alert("An error has occured");
+        },
+      });
+      return false;
     });
 
-    return false;
-  });
-}
+    // Adding buddyinfo
+    $(document).on("submit", "#spa form", function () {
+      let buddyInfo = {
+        name: $("#name").val(),
+        phoneNumber: $("#phoneNumber").val(),
+        address: $("#address").val(),
+      };
 
-function renderError() {
-  getApp().append(
-    `<a id="returnLink" href="#">Return to home</a><h1>Error</h1><p>An error has occured</p>`
-  );
+      const addressbookId = $(this).attr("id");
 
-  $("#returnLink").on("click", function () {
-    fetchHome();
-    return false;
-  });
-}
+      $.ajax({
+        type: "POST",
+        contentType: "application/json",
+        url: `/addressbook/${addressbookId}/addBuddy`,
+        timeout: TIMEOUT,
+        success: function (data, requestStatus, xhrObject) {
+          $("#buddyInfoList").append(`
+            <tr id="${data.id}">
+                <td>${data.name}</td>
+                <td>${data.phoneNumber}</td>
+                <td>${data.address}</td>
+                <td>
+                  <button id="${addressbookId}:${data.id}" type="button">Delete</button>
+                </td>
+            </tr>
+        `);
 
-function fetchHome() {
-  $.ajax({
-    type: "GET",
-    url: "/addressbook/all",
-    timeout: TIMEOUT,
-    success: function (data, requestStatus, xhrObject) {
-      viewData = data;
-      renderView(VIEWS.home, { data: viewData, requestStatus, xhrObject });
-    },
-    error: function (xhrObj, textStatus, exception) {
-      renderView(VIEWS.error, { xhrObj, textStatus, exception });
-    },
-  });
-}
+          // Clear the inputs
+          $("#name").val("");
+          $("#phoneNumber").val("");
+          $("#address").val("");
+        },
+        error: function (xhrObj, textStatus, exception) {
+          alert("An error has occured");
+        },
+        dataType: "json",
+        data: JSON.stringify(buddyInfo),
+      });
 
-function getApp() {
-  return $("#app");
-}
+      return false;
+    });
+
+    // Register the delete handler
+    $(document).on("click", "#buddyInfoList button", function () {
+      const ids = $(this).attr("id").split(":");
+
+      $.ajax({
+        type: "DELETE",
+        url: `/addressbook/${ids[0]}/removeBuddy/${ids[1]}`,
+        timeout: TIMEOUT,
+        success: function (data, requestStatus, xhrObject) {
+          $(`#${data.id}`).remove();
+        },
+        error: function (xhrObj, textStatus, exception) {
+          alert("An error has occured");
+        },
+      });
+
+      return false;
+    });
+  },
+};
+
+$(SPA_SETUP.init);
